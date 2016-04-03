@@ -1,0 +1,36 @@
+
+
+	.jumbotron { 
+    background-image: url("flower.jpg"); 
+    color: 	black;
+	background-size: cover;
+	padding-bottom: 100%;
+	font-family : verdana;
+	word-spacing: 3px;
+	opacity: 0.7;
+    
+	}
+	
+	h1{
+		
+		position: relative;
+		top: 300px;
+	}
+
+	p{
+		position: relative;
+		top: 320px;
+	}
+
+
+
+
+	
+
+
+	
+
+
+
+
+	

@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+	<title>Video Upload</title>
+
+ <!-- Bootstrap Core CSS -->
+			<!-- Latest compiled and minified CSS -->
+			<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" >
+			<!-- Style sheet -->
+			<link rel="stylesheet" href="css/style3.css">
+			<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+			<!-- Latest compiled and minified JavaScript -->
+			<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+			<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+			<!-- RecordRTC library -->
+			<script src="https://cdn.webrtc-experiment.com/RecordRTC.js"></script>
+			<!-- Binary js -->
+			<script src="/js/lib/binary.js"></script>
+			<!-- jquery -->
+            <script src="/js/lib/jquery.js"></script>
+            <script src="/js/lib/common.js"></script>
+            <script src="/js/lib/video.js"></script>
+            <script src="/js/main.js"></script>
+
+	
+</head>
+<body>
+	<!-- Heading -->
+	<div class="jumbotron text-center">
+		<div class="container">
+			<div class="row">
+				<h1 style ="opacity=1.0;" > <strong>Video Recorder and Streamer </strong></h1> 
+				<p >A website to record, view and share !</p> 
+	  
+			</div>
+			<!-- Facebook SSO -->
+			<fb:login-button autologoutlink="true" size="xlarge" scope="public_profile,email"   onlogin="checkLoginState();" padding-top="30px" >
+						</fb:login-button>
+		</div>    
+	</div>
+	
+	<!-- capture and record video -->
+    <div class = "container">
+		<div class = "row">
+				<div class ="col-md-7 col-xs-12 ">
+					<video class ="booth" id="video" width = "600px" height = "400px"></video><hr />
+					<button id="start-recording" class="btn btn-primary btn-lg">Record</button>
+					<button id="stop-recording" class=" btn btn-primary btn-lg">Stop</button>
+					<h4 id="download-url"> </h4>
+				</div>
+				<div class = "col-md-5 col-xs-12">
+					<h4><strong>Instructions to Record and upload the video</strong></h4>
+					<ol class ="instruct">
+						<li> When you are ready to record , press the <kbd> Record </kbd></li>
+						<li> Bowser will request for accessing Camera and Microphone </li>
+						<li> Click <kbd> ok </kbd> </li>
+						<li> Now the recording session begins </li>
+						<li> click <kbd> stop </kbd> when done with recording</li>
+						<li> A preview of your recording will be shown and save link appears </li>
+						<li> click on <kbd> Save Video </kbd> </li>
+						<li> Your recorder video gets saved in the downloads by default in .webm format </li>
+						<li> Drag and drop the saved video into <kbd> drag & drop </kbd> window. This would upload your video to the server </li>
+						<li> Once the video is uploaded, you can see the name of your video listed in <kbd> Your Library </kbd></li>
+						<li> Click on the videos you want to play back, selected video will be played in the <kbd> Play the video </kbd> window </li>
+						<li> In order to delete any of the videos click on selected video on the <kbd> delete video<kbd> list
+						
+					</ol>
+				</div>
+		</div>
+	</div>
+
+	<!-- upload, list and playback section -->
+	<section id="main">
+            <fieldset>
+                <legend>Upload your video(.mp4 or .webm)</legend>
+                <aside id="upload-box">
+                    <article id="progress">Drag and Drop</article>
+                </aside>
+            </fieldset>
+
+            <fieldset>
+                <legend>&nbsp;&nbsp;&nbsp;  Your Video Library</legend>
+
+                <nav id="list"></nav>
+            </fieldset>
+
+            <fieldset>
+                <legend>&nbsp;&nbsp;  Play the Video</legend>
+
+                <video id="videoplay"></video>
+            </fieldset>
+			
+			<fieldset>
+                <legend>&nbsp;&nbsp;&nbsp;  Delete Video</legend>
+
+                <nav id="Deletelist"></nav>
+            </fieldset>
+    </section>
+
+		
+	<script>
+		// calling getuserMedia function
+        function captureUserMedia(mediaConstraints, successCallback, errorCallback) {
+            navigator.mediaDevices.getUserMedia(mediaConstraints).then(successCallback).catch(errorCallback);
+        }
+		
+		//declaring the variables
+        var videoElement = document.getElementById('video');
+        var downloadURL = document.getElementById('download-url');
+
+        var startRecording = document.getElementById('start-recording');
+        var stopRecording = document.getElementById('stop-recording');
+
+		// on record click 
+        startRecording.onclick = function() {
+           // startRecording.disabled = true;
+            stopRecording.disabled = false;
+
+            captureUserMedia00(function(stream) {
+
+                window.audioVideoRecorder = window.RecordRTC(stream, {
+                    type: 'video'
+                });
+                window.audioVideoRecorder.startRecording();
+				console.log(window.audioVideoRecorder);
+				
+            });
+        };
+
+        stopRecording.onclick = function() {
+            stopRecording.disabled = true;
+            startRecording.disabled = false;
+
+            window.audioVideoRecorder.stopRecording(function(url) {
+                downloadURL.innerHTML = '<a href="' + url + '" download="RecordRTC.webm" target="_blank"> Save video</a><hr>';
+				console.log(url);
+                videoElement.src = url;
+                videoElement.muted = false;
+                videoElement.play();
+
+                /*videoElement.onended = function() {
+                    videoElement.pause();
+
+                    // dirty workaround for: "firefox seems unable to playback"
+                    videoElement.src = URL.createObjectURL(audioVideoRecorder.getBlob());
+                };*/
+            });
+        };
+
+        function captureUserMedia00(callback) {
+            captureUserMedia({
+                audio: true,
+                video: true
+            }, function(stream) {
+                videoElement.src = URL.createObjectURL(stream);
+                videoElement.muted = true;
+                videoElement.controls = true;
+                videoElement.play();
+				//stream is sent to call back function
+                callback(stream);
+            }, function(error) {
+                alert(JSON.stringify(error));
+            });
+        }
+        </script>
+	<!--Facebook authentication -->
+	<script>
+  // This is called with the results from from FB.getLoginStatus().
+  function statusChangeCallback(response) {
+    console.log('statusChangeCallback');
+    console.log(response);
+    // The response object is returned with a status field that lets the
+    // app know the current login status of the person.
+    // Full docs on the response object can be found in the documentation
+    // for FB.getLoginStatus().
+    if (response.status === 'connected') {
+      // Logged into your app and Facebook.
+      testAPI();
+    } else if (response.status === 'not_authorized') {
+      // The person is logged into Facebook, but not your app.
+      window.location.replace("https://video-streamer-app.herokuapp.com")
+      document.getElementById('status').innerHTML = 'Please log ' +
+        'into this app.';
+    } else {
+      // The person is not logged into Facebook, so we're not sure if
+      // they are logged into this app or not.
+      window.location.replace("https://video-streamer-app.herokuapp.com")
+      document.getElementById('status').innerHTML = 'Please log ' +
+        'into Facebook.';
+			document.getElementById('status').appendChild(document.getElementById('appear'));
+    }
+  }
+
+  // This function is called when someone finishes with the Login
+  // Button.  See the onlogin handler attached to it in the sample
+  // code below.
+  function checkLoginState() {
+    FB.getLoginStatus(function(response) {
+      statusChangeCallback(response);
+    });
+  }
+
+  window.fbAsyncInit = function() {
+  FB.init({
+    appId      : '229731420707910',
+    cookie     : true,  // enable cookies to allow the server to access 
+                        // the session
+    xfbml      : true,  // parse social plugins on this page
+    version    : 'v2.5' // use graph api version 2.5
+  });
+
+  // Now that we've initialized the JavaScript SDK, we call 
+  // FB.getLoginStatus().  This function gets the state of the
+  // person visiting this page and can return one of three states to
+  // the callback you provide.  They can be:
+  //
+  // 1. Logged into your app ('connected')
+  // 2. Logged into Facebook, but not your app ('not_authorized')
+  // 3. Not logged into Facebook and can't tell if they are logged into
+  //    your app or not.
+  //
+  // These three cases are handled in the callback function.
+
+  FB.getLoginStatus(function(response) {
+    statusChangeCallback(response);
+  });
+
+  };
+
+  // Load the SDK asynchronously
+  (function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "//connect.facebook.net/en_US/sdk.js";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));
+
+  // Here we run a very simple test of the Graph API after login is
+  // successful.  See statusChangeCallback() for when this call is made.
+  function testAPI() {
+    console.log('Welcome!  Fetching your information.... ');
+    FB.api('/me', function(response) {
+      console.log('Successful login for: ' + response.name);
+      document.getElementById('status').innerHTML =
+        'Thanks for logging in, ' + response.name + '!';	
+    });
+  }
+  FB.logout(function(response) {
+  // user is now logged out
+  var host = location.origin;
+		window.location.replace(host+'/last.html');
+});
+		
+  
+ 
+</script>	
+
+		
+</body>
+</html>

@@ -1,0 +1,45 @@
+
+
+	.jumbotron { 
+    background-image: url("flower.jpg"); 
+    color: 	black;
+	background-size: cover;
+	padding-bottom: 400px;
+	font-family : verdana;
+	word-spacing: 3px;
+	    
+	}
+	
+
+	
+	.intro{
+		padding-top: 50px;
+		padding-bottom: 70px;
+		font-family : verdana;
+	}
+	
+	.team{
+		padding-top: 50px;
+		padding-bottom: 70px;
+		font-family : verdana;
+	}
+	.images{
+		height: 20px;
+		width :20 px;
+	}
+	
+.row-footer{
+	background-color :black;
+	color :floral white;
+}
+
+
+	
+
+
+	
+
+
+
+
+	
