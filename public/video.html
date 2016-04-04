@@ -108,6 +108,7 @@
 	<script>
 		// calling getuserMedia function
         function captureUserMedia(mediaConstraints, successCallback, errorCallback) {
+            navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
             navigator.mediaDevices.getUserMedia(mediaConstraints).then(successCallback).catch(errorCallback);
         }
 		

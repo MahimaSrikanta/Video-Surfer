@@ -12,6 +12,26 @@ path         = require('path');
 app          = express();
 video        = require('./lib/video');
 
+//Auth0 imports
+
+var passport = require('passport');
+
+// This is the file we created in step 2.
+// This will configure Passport to use Auth0
+var strategy = require('./setup-passport');
+
+// Session and cookies middlewares to keep user logged in
+var cookieParser = require('cookie-parser');
+var session = require('express-session');
+
+
+//Auth0
+app.use(cookieParser());
+// See express session docs for information on the options: https://github.com/expressjs/session
+app.use(session({ secret: 'YOUR_SECRET_HERE', resave: false,  saveUninitialized: false }));
+app.use(passport.initialize());
+app.use(passport.session());
+
 // all environments
 app.use(express.favicon());
 app.use(express.logger('dev'));
@@ -21,6 +41,23 @@ app.use(express.methodOverride());
 app.use(app.router);
 app.use(express.static(path.join(__dirname, 'public')));
 
+
+// Auth0 callback handler
+app.get('http://video-db-streamer.herokuapp.com/callback',
+  passport.authenticate('auth0', { failureRedirect: 'http://video-db-streamer.herokuapp.com/callback' }),
+  function(req, res) {
+    if (!req.user) {
+      throw new Error('user null');
+    }
+    res.redirect("/index");
+  });
+
+//auth) user
+app.get('/user', function (req, res) {
+  res.render('user', {
+    user: req.user
+  });
+});
 
 
 server = http.createServer(app);

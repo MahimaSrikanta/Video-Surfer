@@ -134,7 +134,7 @@
 
   window.fbAsyncInit = function() {
   FB.init({
-    appId      : '188947351486621',
+    appId      : '861448007332291',
     cookie     : true,  // enable cookies to allow the server to access 
                         // the session
     xfbml      : true,  // parse social plugins on this page
@@ -197,5 +197,24 @@
 
 
 </script>  
+<script src="https://cdn.auth0.com/js/lock-9.0.min.js"></script>
+<script type="text/javascript">
+  
+  var lock = new Auth0Lock('Kd6fFp6ROPPuxIY5LvuhQYjiizhCu2Iq', 'app49113115.auth0.com');
+  
+  
+  function signin() {
+    lock.show({
+        callbackURL: 'http://video-db-streamer.herokuapp.com/callback'
+      , responseType: 'code'
+      , authParams: {
+        scope: 'openid profile'
+      }
+    });
+  }
+</script>
+<button onclick="window.signin();">Login</button>
+
+<button onclick="window.signin();">Login</button>
 </body>
 </html>
