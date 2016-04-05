@@ -42,7 +42,7 @@ app.use(passport.session());
 
 //Auth0
 // Auth0 callback handler
-app.get('http://dry-thicket-81721.herokuapp.com/callback',
+app.get('https://dry-thicket-81721.herokuapp.com/video.html',
   passport.authenticate('auth0', { failureRedirect: '/url-if-something-fails' }),
   function(req, res) {
     if (!req.user) {
