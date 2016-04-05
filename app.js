@@ -12,8 +12,7 @@ path         = require('path');
 app          = express();
 video        = require('./lib/video');
 
-//Auth0 imports
-
+//auth0
 var passport = require('passport');
 
 // This is the file we created in step 2.
@@ -24,14 +23,6 @@ var strategy = require('./setup-passport');
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
 
-
-//Auth0
-app.use(cookieParser());
-// See express session docs for information on the options: https://github.com/expressjs/session
-app.use(session({ secret: 'YOUR_SECRET_HERE', resave: false,  saveUninitialized: false }));
-app.use(passport.initialize());
-app.use(passport.session());
-
 // all environments
 app.use(express.favicon());
 app.use(express.logger('dev'));
@@ -41,23 +32,39 @@ app.use(express.methodOverride());
 app.use(app.router);
 app.use(express.static(path.join(__dirname, 'public')));
 
+//Auth0
+app.use(cookieParser());
+// See express session docs for information on the options: https://github.com/expressjs/session
+app.use(session({ secret: 'YOUR_SECRET_HERE', resave: false,  saveUninitialized: false }));
+app.use(passport.initialize());
+app.use(passport.session());
 
+
+//Auth0
 // Auth0 callback handler
-app.get('http://video-db-streamer.herokuapp.com/callback',
-  passport.authenticate('auth0', { failureRedirect: 'http://video-db-streamer.herokuapp.com/callback' }),
+app.get('http://dry-thicket-81721.herokuapp.com/callback',
+  passport.authenticate('auth0', { failureRedirect: '/url-if-something-fails' }),
   function(req, res) {
     if (!req.user) {
       throw new Error('user null');
     }
-    res.redirect("/index");
+    res.redirect("/user");
   });
 
-//auth) user
+
+//Auth0
 app.get('/user', function (req, res) {
   res.render('user', {
     user: req.user
   });
 });
+
+// development only
+if ('development' == app.get('env')) {
+    app.use(express.errorHandler());
+}
+
+
 
 
 server = http.createServer(app);
