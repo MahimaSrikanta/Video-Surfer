@@ -66,8 +66,10 @@ module.exports = function(req, res, next) {
   next();
 }
 
+
+
 // user.js
-var requiresLogin = require('./equiresLogin');
+var requiresLogin = require('./requiresLogin');
 
 app.get('/user',
   requiresLogin,
