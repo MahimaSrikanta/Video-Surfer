@@ -50,7 +50,25 @@ app.get('https://dry-thicket-81721.herokuapp.com/video.html',
     }
     res.redirect("/user");
   });
+  
+// requiresLogin.js
+module.exports = function(req, res, next) {
+  if (!req.isAuthenticated()) {
+    return res.redirect('/');
+  }
+  next();
+}
 
+// user.js
+var requiresLogin = require('requiresLogin');
+
+app.get('/user',
+  requiresLogin,
+  function (req, res) {
+    res.render('user', {
+      user: req.user
+    });
+  });
 
 //Auth0
 app.get('/user', function (req, res) {
