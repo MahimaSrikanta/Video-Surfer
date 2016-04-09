@@ -58,6 +58,14 @@ app.get('/user', function (req, res) {
   });
 });
 
+// requiresLogin.js
+module.exports = function(req, res, next) {
+  if (!req.isAuthenticated()) {
+    return res.redirect('https://dry-thicket-81721.herokuapp.com');
+  }
+  next();
+}
+
 // user.js
 var requiresLogin = require('requiresLogin');
 
@@ -68,14 +76,7 @@ app.get('/user',
       user: req.user
     });
   });
-  
-// requiresLogin.js
-module.exports = function(req, res, next) {
-  if (!req.isAuthenticated()) {
-    return res.redirect('https://dry-thicket-81721.herokuapp.com');
-  }
-  next();
-}
+ 
 
 // development only
 if ('development' == app.get('env')) {
